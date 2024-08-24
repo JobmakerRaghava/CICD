@@ -1,0 +1,92 @@
+_schema-version: "3.2"
+ID: TAQA_Maintenace_Tables
+version: 0.0.1
+modules:
+- name: TAQA_Maintenace_Tables-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: TAQA_Maintenace_Tables-destination-service
+    parameters:
+      content-target: true
+  - name: TAQA_Maintenace_Tables_html_repo_host
+    parameters:
+      service-key:
+        name: TAQA_Maintenace_Tables_html_repo_host-key
+  - name: uaa_TAQA_Maintenace_Tables
+    parameters:
+      service-key:
+        name: uaa_TAQA_Maintenace_Tables-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: taqamainttable_TAQA_Maintenace_Tables_html_repo_host
+          ServiceInstanceName: TAQA_Maintenace_Tables-html5-app-host-service
+          ServiceKeyName: TAQA_Maintenace_Tables_html_repo_host-key
+          sap.cloud.service: taqamainttable
+        - Authentication: OAuth2UserTokenExchange
+          Name: taqamainttable_uaa_TAQA_Maintenace_Tables
+          ServiceInstanceName: TAQA_Maintenace_Tables-xsuaa-service
+          ServiceKeyName: uaa_TAQA_Maintenace_Tables-key
+          sap.cloud.service: taqamainttable
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: TAQA_Maintenace_Tables-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: TAQA_Maintenace_Tables_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - taqamainttables.zip
+      name: taqamainttables
+      target-path: resources/
+- name: taqamainttables
+  type: html5
+  path: taqamainttables
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: TAQA_Maintenace_Tables-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: TAQA_Maintenace_Tables-destination-service
+    service-plan: lite
+- name: TAQA_Maintenace_Tables_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: TAQA_Maintenace_Tables-html5-app-host-service
+    service-plan: app-host
+- name: uaa_TAQA_Maintenace_Tables
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: TAQA_Maintenace_Tables-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo

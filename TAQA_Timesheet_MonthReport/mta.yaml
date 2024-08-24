@@ -1,0 +1,92 @@
+_schema-version: "3.2"
+ID: TAQA_Timesheet_MonthReport
+version: 0.0.1
+modules:
+- name: TAQA_Timesheet_MonthReport-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: TAQA_Timesheet_MonthReport-destination-service
+    parameters:
+      content-target: true
+  - name: TAQA_Timesheet_MonthReport_html_repo_host
+    parameters:
+      service-key:
+        name: TAQA_Timesheet_MonthReport_html_repo_host-key
+  - name: uaa_TAQA_Timesheet_MonthReport
+    parameters:
+      service-key:
+        name: uaa_TAQA_Timesheet_MonthReport-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: taqatimesheetmonthreport_TAQA_Timesheet_MonthReport_html_repo_host
+          ServiceInstanceName: TAQA_Timesheet_MonthReport-html5-app-host-service
+          ServiceKeyName: TAQA_Timesheet_MonthReport_html_repo_host-key
+          sap.cloud.service: taqatimesheetmonthreport
+        - Authentication: OAuth2UserTokenExchange
+          Name: taqatimesheetmonthreport_uaa_TAQA_Timesheet_MonthReport
+          ServiceInstanceName: TAQA_Timesheet_MonthReport-xsuaa-service
+          ServiceKeyName: uaa_TAQA_Timesheet_MonthReport-key
+          sap.cloud.service: taqatimesheetmonthreport
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: TAQA_Timesheet_MonthReport-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: TAQA_Timesheet_MonthReport_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - taqataqatimesheetmonthreport.zip
+      name: taqataqatimesheetmonthreport
+      target-path: resources/
+- name: taqataqatimesheetmonthreport
+  type: html5
+  path: taqatimesheetmonthreport
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: TAQA_Timesheet_MonthReport-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: TAQA_Timesheet_MonthReport-destination-service
+    service-plan: lite
+- name: TAQA_Timesheet_MonthReport_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: TAQA_Timesheet_MonthReport-html5-app-host-service
+    service-plan: app-host
+- name: uaa_TAQA_Timesheet_MonthReport
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: TAQA_Timesheet_MonthReport-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo

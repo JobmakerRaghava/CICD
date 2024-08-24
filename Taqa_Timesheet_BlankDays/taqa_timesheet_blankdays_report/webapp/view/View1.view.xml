@@ -1,0 +1,123 @@
+<mvc:View controllerName="taqa.taqatimesheetblankdaysreport.controller.View1"
+    xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
+    xmlns="sap.m"
+    xmlns:table="sap.ui.table"
+    xmlns:core="sap.ui.core"
+    xmlns:filterbar="sap.ui.comp.filterbar">
+    <Page id="idPage">
+        <filterbar:FilterBar id="filterbar" search=".onSearch" showClearOnFB="true" clear="onFilterBarClear" useToolbar="false">
+            <filterbar:filterGroupItems>
+                <filterbar:FilterGroupItem name="Date" label="Date" groupName="Group10" visibleInFilterBar="true">
+                    <filterbar:control>
+                        <DateRangeSelection required="true" id="idDatePicker" name="Date" displayFormat="dd-MM-yyyy" valueFormat="dd-MM-yyyy"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+                <filterbar:FilterGroupItem name="EmployeeID" label="Employee No" groupName="Group1" visibleInFilterBar="true">
+                    <filterbar:control>
+                        <MultiInput showValueHelp="false" id="idInput" name="EmployeeID"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+                <filterbar:FilterGroupItem name="EmployeeName" label="Employee Name" groupName="Group1" visibleInFilterBar="false">
+                    <filterbar:control>
+                        <Input name="EmployeeName" id="idInputEmployeeName" showValueHelp="false"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+                <filterbar:FilterGroupItem name="JobTitle" label="Job Title" groupName="Group1" visibleInFilterBar="false">
+                    <filterbar:control>
+                        <Input name="JobTitle" id="idInputJob" showValueHelp="false"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+                <filterbar:FilterGroupItem name="DivisionDesc" label="Division" groupName="Group1" visibleInFilterBar="false">
+                    <filterbar:control>
+                        <Input name="DivisionDesc" id="idInputDivision" showValueHelp="false"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+                <filterbar:FilterGroupItem name="CompanyCodeDesc" label="Legal Entity" groupName="Group1" visibleInFilterBar="true">
+                    <filterbar:control>
+                        <Input name="CompanyCodeDesc" id="idInputLegal" showValueHelp="false"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+                <filterbar:FilterGroupItem name="DepartmentDesc" label="Department" groupName="Group1" visibleInFilterBar="false">
+                    <filterbar:control>
+                        <Input name="DepartmentDesc" id="idInputDepartmentDesc" showValueHelp="false"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+                <filterbar:FilterGroupItem name="LocationDesc" label="Location" groupName="Group1" visibleInFilterBar="false">
+                    <filterbar:control>
+                        <Input name="LocationDesc" id="idInputLocationDesc" showValueHelp="false"/>
+                    </filterbar:control>
+                </filterbar:FilterGroupItem>
+            </filterbar:filterGroupItems>
+        </filterbar:FilterBar>
+        
+        <table:Table id="employeeTable" rows="{/}" selectionMode="None" alternateRowColors="true">
+            <table:extension>
+                <OverflowToolbar>
+                    <Title id="idTitle"/>
+                    <ToolbarSpacer/>
+                    <Button icon="sap-icon://excel-attachment" press="onExcelButtonPress" type="Emphasized" tooltip="Download Blank Days Report"/>
+                </OverflowToolbar>
+            </table:extension>
+            <table:Column width="7rem">
+                <Label text="Employee No"/>
+                <table:template>
+                    <Text text="{EmployeeID}"/>
+                </table:template>
+            </table:Column>
+            <table:Column width="10rem">
+                <Label text="Employee Name"/>
+                <table:template>
+                    <Text text="{EmployeeName}"/>
+                </table:template>
+            </table:Column>
+            <table:Column width="10rem">
+                <Label text="Job Title"/>
+                <table:template>
+                    <Text text="{JobTitle}"/>
+                </table:template>
+            </table:Column>
+            <table:Column width="10rem">
+                <Label text="Legal Entity"/>
+                <table:template>
+                    <Text text="{CompanyCodeDesc}"/>
+                </table:template>
+            </table:Column>
+            <!-- <table:Column width="12rem">
+                <Label text="Legal Entity Description"/>
+                <table:template>
+                    <Text text="{CompanyCodeDesc}"/>
+                </table:template>
+            </table:Column> -->
+            <table:Column width="10rem">
+                <Label text="Location"/>
+                <table:template>
+                    <Text text="{LocationDesc}"/>
+                </table:template>
+            </table:Column>
+            <table:Column width="10rem">
+                <Label text="Department"/>
+                <table:template>
+                    <Text text="{DepartmentDesc}"/>
+                </table:template>
+            </table:Column>
+            <table:Column width="10rem">
+                <Label text="Division"/>
+                <table:template>
+                    <Text text="{DivisionDesc}"/>
+                </table:template>
+            </table:Column>
+            <table:Column width="5rem">
+                <Label text="Date"/>
+                <table:template>
+                    <Text text="{path: 'Date', formatter: '.formatDate'}"/>
+                </table:template>
+            </table:Column>
+            <table:Column width="7rem">
+                <Label text="Blank Days"/>
+                <table:template>
+                    <Text text="1"/>
+                </table:template>
+            </table:Column>
+        </table:Table>
+    </Page>
+</mvc:View>

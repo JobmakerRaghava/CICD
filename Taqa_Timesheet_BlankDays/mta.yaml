@@ -1,0 +1,92 @@
+_schema-version: "3.2"
+ID: Taqa_Timesheet_BlankDays
+version: 0.0.1
+modules:
+- name: Taqa_Timesheet_BlankDays-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: Taqa_Timesheet_BlankDays-destination-service
+    parameters:
+      content-target: true
+  - name: Taqa_Timesheet_BlankDays_html_repo_host
+    parameters:
+      service-key:
+        name: Taqa_Timesheet_BlankDays_html_repo_host-key
+  - name: uaa_Taqa_Timesheet_BlankDays
+    parameters:
+      service-key:
+        name: uaa_Taqa_Timesheet_BlankDays-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: taqatimesheetblankdaysapprouter_Taqa_Timesheet_BlankDays_html_repo_host
+          ServiceInstanceName: Taqa_Timesheet_BlankDays-html5-app-host-service
+          ServiceKeyName: Taqa_Timesheet_BlankDays_html_repo_host-key
+          sap.cloud.service: taqatimesheetblankdaysapprouter
+        - Authentication: OAuth2UserTokenExchange
+          Name: taqatimesheetblankdaysapprouter_uaa_Taqa_Timesheet_BlankDays
+          ServiceInstanceName: Taqa_Timesheet_BlankDays-xsuaa-service
+          ServiceKeyName: uaa_Taqa_Timesheet_BlankDays-key
+          sap.cloud.service: taqatimesheetblankdaysapprouter
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: Taqa_Timesheet_BlankDays-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: Taqa_Timesheet_BlankDays_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - taqataqatimesheetblankdaysreport.zip
+      name: taqataqatimesheetblankdaysreport
+      target-path: resources/
+- name: taqataqatimesheetblankdaysreport
+  type: html5
+  path: taqa_timesheet_blankdays_report
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: Taqa_Timesheet_BlankDays-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: Taqa_Timesheet_BlankDays-destination-service
+    service-plan: lite
+- name: Taqa_Timesheet_BlankDays_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: Taqa_Timesheet_BlankDays-html5-app-host-service
+    service-plan: app-host
+- name: uaa_Taqa_Timesheet_BlankDays
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: Taqa_Timesheet_BlankDays-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
